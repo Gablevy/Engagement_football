@@ -1,0 +1,48 @@
+--Rank daily likes in Facebook considering the ranking of subscription/likes per page for the Premier League Clubs.
+
+select cl.club_name,
+	   dense_rank() over (order by avg(cast(plike_subscribe as bigint)) desc) Ranking_subscribes,
+	   dense_rank() over (order by avg(en.likes) desc) Ranking_daily_likes,
+	   avg(en.likes) avg_likes,
+	   l.league_name
+from Club cl
+join Engagement en on cl.club_id = en.club_id
+join League l on cl.league_id = l.league_id
+join SocialMedia sm on en.socmed_id = sm.socmed_id
+where cl.club_name in (select cl1.club_name from Club cl1
+						join League l1 on cl1.league_id = l1.league_id
+						where league_name = 'Premier League')
+and sm.socmed_name = 'Facebook'
+group by club_name, league_name
+order by avg_likes desc
+
+--Take a random sample cut of 5 club groups and list their position over post likes in the Premier League
+;with "group_engage" as
+(
+select cl.club_name,
+	   ntile(5) over (order by avg(en.likes) desc) group_club,
+	   dense_rank() over (order by avg(en.likes) desc) Ranking_likes_total,
+	   avg(en.likes) avg_likes,
+	   l.league_name
+from Club cl
+join Engagement en on cl.club_id = en.club_id
+join League l on cl.league_id = l.league_id
+group by club_name, league_name
+)
+select *
+from group_engage
+where league_name = 'Premier League'
+
+--List the sponsored teams not related to Nike and Adidas, their final position in their leagues, and relevance according to UCL.
+select cl.club_name,
+	   k.Kit_name,
+	   rs.league_position,
+	   case
+	   when (rs.ucl_position like '%Not Qualified%') then 'Not Relevant'
+	   else 'Relevant'
+	   end as Importance_club
+from Club cl
+join Kit k on cl.kitcl_id = k.Kit_id
+join result_season rs on cl.club_id = rs.club_id
+join League l on cl.league_id = l.league_id
+where k.Kit_name not in ('Nike','Adidas')
