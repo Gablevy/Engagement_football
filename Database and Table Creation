@@ -1,0 +1,60 @@
+IF EXISTS(SELECT * FROM SYS.DATABASES WHERE NAME = 'project_football_engagement')
+  DROP DATABASE project_football_engagement
+GO
+
+create database project_football_engagement
+GO
+
+use project_football_engagement
+GO
+
+create table City(
+city_id int identity(1,1) constraint city_id_pk primary key,
+city_name varchar(25) not null,
+country varchar(25))
+
+create table League(league_id int identity(1,1) constraint league_pk primary key,
+league_name varchar(25) not null,
+confed varchar(50) not null)
+
+create table Kit(
+Kit_id int identity(1,1) constraint sponsor_id_pk primary key,
+Kit_name varchar(50) constraint unif_brand_nn not null)
+
+create table Stadium(
+sta_id int identity(1,1) constraint sta_id_pk primary key,
+sta_name varchar(255) constraint sta_name_nn not null,
+sta_capacity int constraint sta_capacity_nn not null,
+city_id int constraint city_id_fk references City(city_id))
+
+create table Club(
+club_id int identity(1,1) constraint club_id_pk primary key,
+club_name varchar(255) constraint clubname_nn not null,
+foundation date,
+sta_id int constraint sta_id_fk references Stadium(sta_id),
+kitcl_id int constraint sponsor_id_fk references Kit(Kit_id),
+manager varchar(40) constraint manager_nn not null,
+chairman varchar(255),
+league_id int constraint leag_fk references League(league_id))
+
+create table result_season( 
+begin_season int,
+end_season int,
+club_id int constraint clubucl_res_fk references Club(club_id),
+league_position int,
+europa_league varchar(50),
+ucl_position varchar(50))
+
+create table SocialMedia( 
+socmed_id int identity(1,1) primary key,
+socmed_name varchar(25))
+
+create table Engagement(
+socmed_id int constraint engsocm_fk references SocialMedia(socmed_id),
+date_engage date,
+plike_subscribe int,
+posts int,
+likes int,
+comments int,
+club_id int constraint club_eng_fk references Club(club_id)
+)
