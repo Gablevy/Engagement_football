@@ -47,22 +47,22 @@ join result_season rs on cl.club_id = rs.club_id
 join League l on cl.league_id = l.league_id
 where k.Kit_name not in ('Nike','Adidas')
 
---Make evolution of likes per post in social media during the months for European National Champions during the season:
+--Make evolution of likes per post in social media during the months for European National Champions during the season 2019-2020:
 
 select Club_Name,
 	   confed Country,
-           [Nov] Nov_2019,
-	   [Dec] Dec_2019,
-	   [Jan] Jan_2020,
-	   [Feb] Feb_2020,
-	   [Mar] Mar_2020,
-	   [Apr] Apr_2020,
-	   [May] May_2020,
-	   [Jun] Jun_2020,
-	   [Jul] Jul_2020,
-	   [Aug] Aug_2020
+       [Aug_2019],
+	   [Sep_2019],
+	   [Oct_2019],
+	   [Nov_2019],
+	   [Dec_2019],
+	   [Jan_2020],
+	   [Feb_2020],
+	   [Mar_2020],
+	   [Apr_2020],
+	   [May_2020]
 from
-(select cl.club_name as 'Club_Name', l.confed, left(datename(month, en.date_engage), 3) month_season, 
+(select cl.club_name as 'Club_Name', l.confed, left(datename(month, en.date_engage), 3) + '_' + cast(year(en.date_engage) as varchar) month_season, 
 en.likes/en.posts likes_per_post, sm.socmed_name as 'Social_Media'
 from Club cl
 join Engagement en on cl.club_id = en.club_id
@@ -73,7 +73,8 @@ where sm.socmed_name = 'Facebook'
 and rs.league_position = 1)
 as tbl
 pivot
-(avg(likes_per_post) for month_season in ([Nov],
-[Dec], [Jan], [Feb], [Mar],[Apr], [May], [Jun],
-[Jul], [Aug])) as piv_tab
+(avg(likes_per_post) for month_season in (
+[Jul_2019], [Aug_2019], [Sep_2019], [Oct_2019], [Nov_2019],
+[Dec_2019], [Jan_2020], [Feb_2020], [Mar_2020],[Apr_2020], [May_2020], [Jun_2020],
+[Jul_2020],[Aug_2020], [Sep_2020], [Oct_2020], [Nov_2020])) as piv_tab
 order by club_name
