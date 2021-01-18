@@ -51,7 +51,7 @@ where k.Kit_name not in ('Nike','Adidas')
 
 select Club_Name,
 	   confed Country,
-       [Nov] Nov_2019,
+           [Nov] Nov_2019,
 	   [Dec] Dec_2019,
 	   [Jan] Jan_2020,
 	   [Feb] Feb_2020,
